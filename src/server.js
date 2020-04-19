@@ -11,7 +11,7 @@ const fetchData = async (req, res) => {
         let data = response['raw_data'];
 
         let filteredData = data.filter((sample) => {
-            return  sample.currentstatus.toLowerCase() === 'hospitalized'  ;
+            return  sample.currentstatus.toLowerCase() !== 'hospitalized'  ;
         });
         
         res.json({
