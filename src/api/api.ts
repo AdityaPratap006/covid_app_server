@@ -1,6 +1,6 @@
 import express, { Request, Response, Application } from 'express';
 
-import rawDataRouter from './routes/rawDataRouter';
+import { rawDataRouter } from './routes/';
 
 const api: Application = express();
 
