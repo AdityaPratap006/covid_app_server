@@ -2,11 +2,11 @@
   "name": "covid_app_server",
   "version": "1.0.0",
   "description": "The backend server for a flutter based covid19 tracking app",
-  "main": "server.js",
+  "main": "./src/server.ts",
   "scripts": {
     "tsc": "tsc",
     "dev": "ts-node-dev --respawn --transpileOnly ./src/server.ts",
-    "prod": "tsc && node ./build/app.js"
+    "prod": "rimraf ./build && tsc && node ./build/src/server.js"
   },
   "author": "Aditya Pratap",
   "license": "ISC",
