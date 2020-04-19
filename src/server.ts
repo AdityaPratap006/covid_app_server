@@ -1,16 +1,16 @@
-import fetch from 'node-fetch';
-import express from 'express';
+import fetch, { Response as FetchResponse } from 'node-fetch';
+import express, { Request, Response } from 'express';
 
-const app = express();
-const port = process.env.PORT || 3000;
+const app: express.Application = express();
+const port: any = process.env.PORT || 3000;
 
-const fetchData = async (req, res) => {
+const fetchData = async (req: Request, res: Response) => {
     try {
-        const response = await fetch('https://api.covid19india.org/raw_data.json').then(res => res.json());
+        const response = await fetch('https://api.covid19india.org/raw_data.json').then((res: FetchResponse) => res.json());
         
         let data = response['raw_data'];
 
-        let filteredData = data.filter((sample) => {
+        let filteredData = data.filter((sample: any) => {
             return  sample.currentstatus.toLowerCase() !== 'hospitalized'  ;
         });
         
