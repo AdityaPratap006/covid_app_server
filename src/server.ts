@@ -10,11 +10,12 @@ const port: string | number = process.env.PORT || 3000;
 app.use('/api', api);
 
 
-//execute jobs
-// retrieveLocationsAndUpdateDB();
-// setInterval(() => {
-//     retrieveLocationsAndUpdateDB();
-// }, 2 * 60 * 60 * 1000);
+// execute jobs
+retrieveLocationsAndUpdateDB();
+setInterval(() => {
+    // console.log('interval ', Date.now())
+    retrieveLocationsAndUpdateDB();
+}, 2 * 60 * 60 * 1000);
 
 app.listen(port, (): void => {
     console.log(`Server running at: http://localhost:${port}`);

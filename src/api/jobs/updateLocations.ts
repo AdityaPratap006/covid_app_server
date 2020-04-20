@@ -1,6 +1,6 @@
 import nodeFetch, { Response } from 'node-fetch';
 import { RawData, RawDataSample } from '../models/RawData';
-import { LocationMap } from '../models/LocationMap';
+import { LocationData, StateData } from '../models/LocationData';
 
 import admin from 'firebase-admin';
 const serviceAccount = require('../../../serviceAccountKey.json');
@@ -12,7 +12,46 @@ admin.initializeApp({
 const db = admin.firestore();
 
 
-const organiseDataIntoMap: object = (data: Array<RawDataSample>) => {
+const organiseDataIntoMap = (data: Array<RawDataSample>): StateData => {
+    let stateData = new Map<string, Map<string, LocationData>>();
+
+    data.forEach((sample: RawDataSample) => {
+
+        const { detectedcity, detecteddistrict, detectedstate } = sample;
+        const stateKey: string = `${detectedstate}`;
+        let locationKey = `${detectedcity}, ${detecteddistrict}, ${detectedstate}`;
+
+        if (stateData?.has(stateKey)) {
+            let locationMap: Map<string, LocationData> | undefined = stateData.get(stateKey);
+
+
+            if (locationMap?.has(locationKey)) {
+                let locData = locationMap.get(locationKey);
+
+                locationMap!.set(locationKey, {
+                    caseCount: locData!.caseCount + 1,
+                });
+
+            } else {
+
+                locationMap?.set(locationKey, {
+                    caseCount: 1,
+                });
+
+
+            }
+        } else {
+            let locationMap = new Map<string, LocationData>();
+            locationMap?.set(locationKey, {
+                caseCount: 1,
+            });
+            stateData.set(stateKey, locationMap);
+        }
+
+    });
+
+    // console.log('StateWiseData', stateData);
+    return stateData;
 
 }
 
@@ -25,21 +64,35 @@ export const retrieveLocationsAndUpdateDB = async (): Promise<string | object> =
 
         let data: Array<RawDataSample> = response.raw_data;
 
-        let filteredData: Array<RawDataSample> = data.filter((sample: RawDataSample): boolean => {
+        let filteredData = data.filter(sample => {
+            return sample.currentstatus && sample.detectedcity && sample.detecteddistrict && sample.detectedstate;
+        })
 
-            return sample.currentstatus.toLowerCase() === 'hospitalized' && sample.detecteddistrict.toLowerCase() === 'mumbai';
+        let organisedStateWiseData = organiseDataIntoMap(filteredData);
+
+        organisedStateWiseData.forEach(async (stateData: Map<string, LocationData>, stateKey: string) => {
+
+            stateData.forEach(async (locationData: LocationData, locationKey: string) => {
+                await db
+                    .collection('locations')
+                    .doc(stateKey)
+                    .collection('locationData')
+                    .doc(locationKey)
+                    .set({
+                        caseCount: locationData.caseCount,
+                    });
+
+                    // console.log('saved! ', Date.now());
+            });
         });
 
-        await db.collection('locations').doc('length')
-            .set({
-                length: filteredData.length,
-                time: Date.now().toLocaleString(),
-            });
+        // console.log(organisedStateWiseData);
+        let result: any = {
+            size: organisedStateWiseData.size,
+            data: organisedStateWiseData,
+        };
 
-        return {
-            length: filteredData.length,
-            data: filteredData,
-        }
+        return result;
 
     } catch (error) {
         let result: string = (error as Error).message;
