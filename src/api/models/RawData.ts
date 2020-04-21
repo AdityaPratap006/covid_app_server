@@ -25,3 +25,4 @@ export interface RawDataSample {
 export interface RawData {
     raw_data: Array<RawDataSample>,
 }
+

@@ -13,7 +13,7 @@ const db = admin.firestore();
 
 
 const organiseDataIntoMap = (data: Array<RawDataSample>): StateData => {
-    let stateData = new Map<string, Map<string, LocationData>>();
+    let stateData: StateData = new Map();
 
     data.forEach((sample: RawDataSample) => {
 
@@ -22,35 +22,28 @@ const organiseDataIntoMap = (data: Array<RawDataSample>): StateData => {
         let locationKey = `${detectedcity}, ${detecteddistrict}, ${detectedstate}`;
 
         if (stateData?.has(stateKey)) {
-            let locationMap: Map<string, LocationData> | undefined = stateData.get(stateKey);
+            let locations: Map<string, LocationData> | undefined = stateData.get(stateKey);
 
-
-            if (locationMap?.has(locationKey)) {
-                let locData = locationMap.get(locationKey);
-
-                locationMap!.set(locationKey, {
-                    caseCount: locData!.caseCount + 1,
-                });
-
+            if (locations?.has(locationKey)) {
+                let locData = locations.get(locationKey);
+                locData!.caseCount++;
+                locations.set(locationKey, locData!);
             } else {
-
-                locationMap?.set(locationKey, {
+                let locData = <LocationData>{
+                    location: locationKey,
                     caseCount: 1,
-                });
-
-
+                };
+                locations!.set(locationKey, locData!);
             }
         } else {
-            let locationMap = new Map<string, LocationData>();
-            locationMap?.set(locationKey, {
-                caseCount: 1,
-            });
-            stateData.set(stateKey, locationMap);
+            let locations: Map<string, LocationData> = new Map();
+            locations.set(locationKey, <LocationData>{ location: locationKey, caseCount: 1 });
+            stateData.set(stateKey, locations);
         }
 
     });
 
-    // console.log('StateWiseData', stateData);
+
     return stateData;
 
 }
@@ -71,22 +64,27 @@ export const retrieveLocationsAndUpdateDB = async (): Promise<string | object> =
         let organisedStateWiseData = organiseDataIntoMap(filteredData);
 
         organisedStateWiseData.forEach(async (stateData: Map<string, LocationData>, stateKey: string) => {
+            // console.log(`\nStateWiseData`);
 
-            stateData.forEach(async (locationData: LocationData, locationKey: string) => {
-                await db
-                    .collection('locations')
-                    .doc(stateKey)
-                    .collection('locationData')
-                    .doc(locationKey)
-                    .set({
-                        caseCount: locationData.caseCount,
-                    });
+            let locationsArray: Array<LocationData> = [];
 
-                    // console.log('saved! ', Date.now());
+            stateData.forEach(async (loc: LocationData) => {
+                // console.log('locData: ', loc);
+                locationsArray.push(loc);
             });
+
+            const stateDocRef = db.collection('locations').doc(stateKey);
+
+            await stateDocRef
+                .set({
+                    state: stateKey,
+                    locations: locationsArray,
+                });
+
+
         });
 
-        // console.log(organisedStateWiseData);
+
         let result: any = {
             size: organisedStateWiseData.size,
             data: organisedStateWiseData,
