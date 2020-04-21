@@ -2,15 +2,7 @@ import nodeFetch, { Response } from 'node-fetch';
 import { RawData, RawDataSample } from '../models/RawData';
 import { LocationData, StateData } from '../models/LocationData';
 
-import admin from 'firebase-admin';
-const serviceAccount = require('../../../serviceAccountKey.json');
-
-admin.initializeApp({
-    credential: admin.credential.cert(serviceAccount),
-});
-
-const db = admin.firestore();
-
+import { db } from '../db/config';
 
 const organiseDataIntoMap = (data: Array<RawDataSample>): StateData => {
     let stateData: StateData = new Map();
