@@ -58,18 +58,18 @@ export const retrieveLocationsAndUpdateDB = async (): Promise<string | object> =
         let data: Array<RawDataSample> = response.raw_data;
 
         let filteredData = data.filter(sample => {
-            return sample.currentstatus && sample.detectedcity && sample.detecteddistrict && sample.detectedstate;
+            return sample.currentstatus &&  sample.detectedstate && (sample.detectedcity || sample.detecteddistrict);
         })
 
         let organisedStateWiseData = organiseDataIntoMap(filteredData);
 
         organisedStateWiseData.forEach(async (stateData: Map<string, LocationData>, stateKey: string) => {
-            // console.log(`\nStateWiseData`);
+            console.log(`\nStateWiseData`);
 
             let locationsArray: Array<LocationData> = [];
 
             stateData.forEach(async (loc: LocationData) => {
-                // console.log('locData: ', loc);
+                console.log('locData: ', loc);
                 locationsArray.push(loc);
             });
 
