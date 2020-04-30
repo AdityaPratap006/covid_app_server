@@ -1,0 +1,1 @@
+web:rimraf ./build && tsc && node ./build/src/server.js
