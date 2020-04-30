@@ -6,7 +6,7 @@
   "scripts": {
     "tsc": "tsc",
     "dev": "ts-node-dev --respawn --transpileOnly ./src/server.ts",
-    "prod": "rimraf ./build && tsc && node ./build/src/server.js"
+    "start": "rimraf ./build && tsc && node ./build/src/server.js"
   },
   "author": "Aditya Pratap",
   "license": "ISC",
