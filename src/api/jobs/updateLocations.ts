@@ -56,12 +56,12 @@ export const retrieveLocationsAndUpdateDB = async (): Promise<string | object> =
         let organisedStateWiseData = organiseDataIntoMap(filteredData);
 
         organisedStateWiseData.forEach(async (stateData: Map<string, LocationData>, stateKey: string) => {
-            console.log(`\nStateWiseData`);
+            // console.log(`\nStateWiseData`);
 
             let locationsArray: Array<LocationData> = [];
 
             stateData.forEach(async (loc: LocationData) => {
-                console.log('locData: ', loc);
+                // console.log('locData: ', loc);
                 locationsArray.push(loc);
             });
 
