@@ -7,6 +7,7 @@ import { retrieveLocationsAndUpdateDB } from './api/jobs/';
 const app: Application = express();
 const port: string | number = process.env.PORT || 3000;
 
+
 app.use('/api', api);
 
 
@@ -19,5 +20,5 @@ setInterval(() => {
 }, 2 * 60 * 60 * 1000);
 
 app.listen(port, (): void => {
-    console.log(`Server running at: http://localhost:${port}`);
+    console.log(`Server running on port:${port}`);
 });
