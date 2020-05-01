@@ -181,3 +181,4 @@ export const retrieveLocationsAndUpdateDB = async (): Promise<string | object> =
     }
 }
 
+retrieveLocationsAndUpdateDB();
