@@ -126,8 +126,8 @@ export const retrieveLocationsAndUpdateDB = async (): Promise<string | object> =
         locationDataArray = await fetchAndSetCoordinates(locationDataArray);
 
 
-        //wait for 2 min while coordinates are fetched
-        await delay(2 * 60 * 1000);
+        //wait for 3 min while coordinates are fetched
+        await delay(3 * 60 * 1000);
 
         console.log('Re organise data');
         //re organsie stateWiseData with coordinates
