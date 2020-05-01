@@ -1,6 +1,13 @@
+export interface Coordinates {
+    latitude: number,
+    longitude: number,
+}
+
 export interface LocationData {
+    state: string,
     location: string, 
     caseCount: number,
+    coordinates: Coordinates,
 }
 
 export interface ResponseLocationObject {

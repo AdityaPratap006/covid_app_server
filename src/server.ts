@@ -13,7 +13,7 @@ app.use('/api', api);
 
 // execute jobs
 
-// retrieveLocationsAndUpdateDB();
+retrieveLocationsAndUpdateDB();
 setInterval(() => {
     // console.log('interval ', Date.now())
     retrieveLocationsAndUpdateDB();
