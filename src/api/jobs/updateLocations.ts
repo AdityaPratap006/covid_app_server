@@ -99,12 +99,13 @@ export const retrieveLocationsAndUpdateDB = async (): Promise<string | object> =
 
     try {
 
-        const response: RawData = await nodeFetch('https://api.covid19india.org/raw_data.json').then((res: Response) => res.json());
+        const response: RawData = await nodeFetch('https://api.covid19india.org/raw_data2.json').then((res: Response) => res.json());
+        const response2: RawData = await nodeFetch('https://api.covid19india.org/raw_data3.json').then((res: Response) => res.json());
 
-        let data: Array<RawDataSample> = response.raw_data;
+        let data: Array<RawDataSample> = [...response.raw_data, ...response2.raw_data];
 
         let filteredData = data.filter(sample => {
-            return sample.currentstatus && sample.detectedstate && (sample.detectedcity || sample.detecteddistrict);
+            return sample.detectedstate && (sample.detectedcity || sample.detecteddistrict);
         })
 
         let organisedStateWiseData = organiseDataIntoMap(filteredData);
@@ -126,8 +127,8 @@ export const retrieveLocationsAndUpdateDB = async (): Promise<string | object> =
         locationDataArray = await fetchAndSetCoordinates(locationDataArray);
 
 
-        //wait for 3 min while coordinates are fetched
-        await delay(3 * 60 * 1000);
+        //wait for 2 min while coordinates are fetched
+        await delay(2 * 60 * 1000);
 
         console.log('Re organise data');
         //re organsie stateWiseData with coordinates
