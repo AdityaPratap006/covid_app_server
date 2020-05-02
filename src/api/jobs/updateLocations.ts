@@ -102,10 +102,10 @@ export const retrieveLocationsAndUpdateDB = async (): Promise<string | object> =
         const response2: RawData = await nodeFetch('https://api.covid19india.org/raw_data2.json').then((res: Response) => res.json());
         const response3: RawData = await nodeFetch('https://api.covid19india.org/raw_data3.json').then((res: Response) => res.json());
 
-        const westBengalData: Array<RawDataSample> = response1.raw_data.filter((sample) => sample.detectedstate.toLowerCase() === 'west bengal');
+        let spcialData =  response1.raw_data.filter((sample) => ['delhi', 'west bengal', 'maharashtra', 'telangana'].includes(sample.detectedstate.toLowerCase()));       
 
-        let data: Array<RawDataSample> = [...response2.raw_data, ...response3.raw_data, ...westBengalData];
-
+        let data: Array<RawDataSample> = [ ...spcialData, ...response2.raw_data, ...response3.raw_data,];
+        
         let filteredData = data.filter(sample => {
             return sample.detectedstate && (sample.detectedcity || sample.detecteddistrict);
         })
@@ -129,8 +129,9 @@ export const retrieveLocationsAndUpdateDB = async (): Promise<string | object> =
         locationDataArray = await fetchAndSetCoordinates(locationDataArray);
 
 
-        //wait for 2 min while coordinates are fetched
-        await delay(2 * 60 * 1000);
+        //wait while coordinates are fetched
+        const waitingTimeInMinutes = (0.1*locationDataArray.length/60) + 0.5;
+        await delay( waitingTimeInMinutes * 60 * 1000);
 
         console.log('Re organise data');
         //re organsie stateWiseData with coordinates
