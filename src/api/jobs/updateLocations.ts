@@ -33,7 +33,7 @@ const organiseDataIntoMap = (data: Array<RawDataSample>): Map<string, Map<string
 
         const { detectedcity, detecteddistrict, detectedstate } = sample;
         const stateKey: string = `${detectedstate}`;
-        let locationKey = `${detectedcity}, ${detecteddistrict}, ${detectedstate}`;
+        let locationKey = `${detectedcity}, ${detecteddistrict}, ${detectedstate}`.trimLeft();
 
         if (stateData?.has(stateKey)) {
             let locations: Map<string, LocationData> | undefined = stateData.get(stateKey);
