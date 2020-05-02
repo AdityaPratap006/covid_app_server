@@ -98,11 +98,13 @@ const fetchAndSetCoordinates = async (locationDataArray: LocationData[]) => {
 export const retrieveLocationsAndUpdateDB = async (): Promise<string | object> => {
 
     try {
+        const response1: RawData = await nodeFetch('https://api.covid19india.org/raw_data1.json').then((res: Response) => res.json());
+        const response2: RawData = await nodeFetch('https://api.covid19india.org/raw_data2.json').then((res: Response) => res.json());
+        const response3: RawData = await nodeFetch('https://api.covid19india.org/raw_data3.json').then((res: Response) => res.json());
 
-        const response: RawData = await nodeFetch('https://api.covid19india.org/raw_data2.json').then((res: Response) => res.json());
-        const response2: RawData = await nodeFetch('https://api.covid19india.org/raw_data3.json').then((res: Response) => res.json());
+        const westBengalData: Array<RawDataSample> = response1.raw_data.filter((sample) => sample.detectedstate.toLowerCase() === 'west bengal');
 
-        let data: Array<RawDataSample> = [...response.raw_data, ...response2.raw_data];
+        let data: Array<RawDataSample> = [...response2.raw_data, ...response3.raw_data, ...westBengalData];
 
         let filteredData = data.filter(sample => {
             return sample.detectedstate && (sample.detectedcity || sample.detecteddistrict);
